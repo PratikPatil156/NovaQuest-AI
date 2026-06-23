@@ -1,0 +1,15 @@
+langchain
+langchain-community
+langchain-chroma
+langchain-google-genai
+pypdf
+chromadb
+streamlit
+pytest
+python-dotenv
+watchdog
+fastapi
+uvicorn
+python-multipart
+langchain-openai
+

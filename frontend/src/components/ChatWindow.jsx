@@ -68,31 +68,12 @@ export default function ChatWindow({
           messages.map((msg, index) => (
             <div key={index} className={`message-row ${msg.role}`}>
               <div className="avatar">
-                {msg.role === 'user' ? '🧑‍🚀' : '🛸'}
+                {msg.role === 'user' ? '👨‍💻' : '🤖'}
               </div>
               <div className="message-content">
                 <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
                 
-                {/* Citations block for Assistant responses */}
-                {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (
-                  <div className="citations-section">
-                    <div className="citations-title">Citations Retrieved</div>
-                    <div className="citations-list">
-                      {msg.sources.map((src, srcIdx) => (
-                        <div 
-                          key={srcIdx} 
-                          className="citation-tag"
-                          onClick={() => setSelectedCitation(src)}
-                        >
-                          <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                          </svg>
-                          {src.file} (Pg {src.page})
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
               </div>
             </div>
           ))
@@ -101,7 +82,7 @@ export default function ChatWindow({
         {/* Loading Spinner typing indicator */}
         {isLoading && (
           <div className="message-row assistant">
-            <div className="avatar">🛸</div>
+            <div className="avatar">🤖</div>
             <div className="message-content">
               <div className="typing-indicator">
                 <div className="typing-dot"></div>

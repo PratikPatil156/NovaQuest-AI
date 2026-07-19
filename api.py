@@ -72,8 +72,8 @@ def get_db_stats_helper():
 @app.get("/api/stats")
 async def get_stats():
     """Retrieve active database statistics."""
-    openai_key = os.getenv("OPENAI_API_KEY")
-    has_api_key = bool(openai_key and openai_key != "your_openai_api_key_here")
+    groq_key = os.getenv("GROQ_API_KEY")
+    has_api_key = bool(groq_key and groq_key != "your_groq_api_key_here")
     chunk_count, doc_list = get_db_stats_helper()
     return {
         "connected": True,
@@ -86,10 +86,10 @@ async def get_stats():
 @app.post("/api/upload")
 async def upload_files(files: List[UploadFile] = File(...)):
     """Upload documents and instantly parse, chunk, and index them into ChromaDB."""
-    openai_key = os.getenv("OPENAI_API_KEY")
-    has_api_key = bool(openai_key and openai_key != "your_openai_api_key_here")
+    groq_key = os.getenv("GROQ_API_KEY")
+    has_api_key = bool(groq_key and groq_key != "your_groq_api_key_here")
     if not has_api_key:
-        raise HTTPException(status_code=400, detail="OPENAI_API_KEY environment variable is missing or placeholder.")
+        raise HTTPException(status_code=400, detail="GROQ_API_KEY environment variable is missing or placeholder.")
 
     try:
         _, doc_list = get_db_stats_helper()
@@ -138,11 +138,11 @@ async def query_endpoint(payload: QueryRequest):
     query_text = payload.query
 
     # 1. Verification checks
-    openai_key = os.getenv("OPENAI_API_KEY")
-    has_api_key = bool(openai_key and openai_key != "your_openai_api_key_here")
+    groq_key = os.getenv("GROQ_API_KEY")
+    has_api_key = bool(groq_key and groq_key != "your_groq_api_key_here")
     if not has_api_key:
         return QueryResponse(
-            answer="❌ **API Key Error:** OPENAI_API_KEY environment variable is not set or is still a placeholder. Please add your key to the `.env` file to enable the AI engine.",
+            answer="❌ **API Key Error:** GROQ_API_KEY environment variable is not set or is still a placeholder. Please add your key to the `.env` file to enable the AI engine.",
             sources=[]
         )
 
@@ -156,7 +156,7 @@ async def query_endpoint(payload: QueryRequest):
         # 2. Search Chroma vector store
         embedding_function = get_embedding_function()
         db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-        results = db.similarity_search_with_score(query_text, k=5)
+        results = db.similarity_search_with_score(query_text, k=15)
         
         if len(results) == 0:
             return QueryResponse(
@@ -168,20 +168,21 @@ async def query_endpoint(payload: QueryRequest):
         context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
         
         # 4. Formulate LLM query
-        from langchain_openai import ChatOpenAI
+        from langchain_groq import ChatGroq
         from langchain_core.prompts import ChatPromptTemplate
         
         prompt_template = ChatPromptTemplate.from_template(
-            "Answer the question based ONLY on the following context. If you cannot find the answer in the context, "
-            "say \"I could not find the answer in the provided documents.\" DO NOT make up information.\n\n"
+            "You are a helpful AI assistant. Answer the user's question based ONLY on the following context. "
+            "The user may ask the question in Hindi or Hinglish. You should read the English context carefully to find the answer. "
+            "If you cannot find the answer, say \"I could not find the answer in the provided documents.\" DO NOT make up information.\n\n"
             "Context:\n{context}\n\n---\n\nQuestion: {question}"
         )
         prompt = prompt_template.format(context=context_text, question=query_text)
 
-        # 5. Call OpenAI API
-        model = ChatOpenAI(
-            model="gpt-4o-mini", 
-            openai_api_key=openai_key,
+        # 5. Call Groq API
+        model = ChatGroq(
+            model="llama-3.1-8b-instant", 
+            groq_api_key=groq_key,
             temperature=0.2
         )
         response_metadata = model.invoke(prompt)

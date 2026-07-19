@@ -1,75 +1,60 @@
-# 🚀 NovaQuest AI
+# NovaQuest AI: Multilingual RAG Document QA System
 
-A production-ready **Retrieval-Augmented Generation (RAG)** application built with LangChain, persistent ChromaDB, and OpenAI. It features a high-speed FastAPI backend and a gorgeous modern React dashboard.
+A self-hosted, privacy-first **Retrieval-Augmented Generation (RAG)** platform designed to query and analyze documents (such as resumes, project documentation, or technical manuals) using local embeddings and high-speed open-source language models. 
 
----
-
-## 🛠️ Tech Stack & Features
-
-* **LLM Engine:** OpenAI (`gpt-4o-mini` model for high-speed, contextual synthesis)
-* **Embedding Model:** OpenAI (`text-embedding-3-small`)
-* **Vector Store:** ChromaDB (persistent SQLite-backed local vector store)
-* **Backend:** FastAPI (Python REST API)
-* **Frontend:** React + Vite (Vibrant custom dark/neon interface)
-* **Features:** Upload multiple files, delete single files, wipe vector space, automated deduplication, and structured citations.
+This project features a high-performance **FastAPI backend**, a modern **React + Vite frontend dashboard**, and a local **ChromaDB vector database**.
 
 ---
 
-## 📂 Project Structure
+## 🚀 Key Features
 
-```text
-├── data/                      # Place your source PDFs/TXTs/MDs here
-├── chroma/                    # SQLite persistent ChromaDB vector store
-├── frontend/                  # React + Vite frontend application
-├── api.py                     # FastAPI backend server
-├── get_embedding_function.py  # Utility to retrieve OpenAI embeddings
-├── populate_database.py       # Data loader & embedding ingestion script
-├── query_data.py              # CLI query interface
-├── requirements.txt           # Python dependencies
-├── .env                       # Environment configuration API keys
-└── README.md                  # This setup guide
-```
+*   **Multilingual Semantic Search:** Uses `paraphrase-multilingual-MiniLM-L12-v2` local embeddings to support queries in **English, Hindi, and Hinglish** (e.g., *"mene internship kiya hai kya?"*) matched against English documents.
+*   **Cost-Free Inference:** Powered by **Groq API** (`llama-3.1-8b-instant`) for ultra-fast response times and **HuggingFace** for free, local vector embedding generation (runs entirely on CPU).
+*   **High Precision Chunking:** Optimized text splitting (`chunk_size=400`, `chunk_overlap=40`) to prevent context bleed between dense sections (ideal for parsing resumes and technical logs).
+*   **Strict Grounding (Anti-Hallucination):** Prompts are constrained to answer questions *only* if the facts exist in the retrieved context. If the data isn't found, the system cleanly states it rather than hallucinating answers.
+*   **Persistent Chat History:** Integrated client-side storage (`localStorage`) so your conversations survive browser refreshes or server restarts.
+*   **Interactive Dashboard:** A dark-themed React dashboard featuring connection indicators, managed files viewer, and drag-and-drop file upload.
 
 ---
 
-## 🚀 How to Run the Project
+## 🛠️ Local Setup and Installation
 
-### Step 1: Set Up Your OpenAI API Key
-1. Get an API key from [OpenAI Platform](https://platform.openai.com/).
-2. Open the `.env` file in the root directory and add your key:
-   ```env
-   OPENAI_API_KEY=sk-proj-YourOpenAiKeyHere
-   ```
+### Prerequisites
+*   Python 3.9 or higher
+*   Node.js (v18+) and npm
+
+### Step 1: Set Up API Keys
+1. Get a free API Key from the [Groq Console](https://console.groq.com/keys).
+2. Create/edit the `.env` file in the root directory and add your key:
+    ```env
+    GROQ_API_KEY=gsk_your_groq_api_key_here
+    CHROMA_PATH=chroma
+    DATA_PATH=data
+    ```
 
 ### Step 2: Start the FastAPI Backend (Terminal 1)
-Open a terminal in the root folder and run:
+Open a terminal in the project root directory and run:
 ```bash
-# Install Python backend dependencies
-pip install fastapi uvicorn python-multipart langchain-openai
+# Install backend dependencies
+pip install -r requirements.txt
 
 # Start the API server
 python api.py
 ```
-*The backend API will run on `http://127.0.0.1:8000`.*
+*Note: The backend API will start on `http://127.0.0.1:8000`. On first launch, it will download the embedding model (~450MB) locally.*
 
 ### Step 3: Start the React Frontend (Terminal 2)
-Open a new terminal window, navigate to the `frontend` directory, and run:
+Open a second terminal window, navigate to the `frontend` folder, and run:
 ```bash
 # Enter the frontend folder
 cd frontend
 
-# Install Node modules (if running for the first time)
+# Install Node modules
 npm install
 
 # Start the Vite React development server
 npm run dev
 ```
-*The React UI will run on `http://localhost:5173`. Open this URL in your browser to use NovaQuest AI!*
+*The React UI will launch on `http://localhost:5173`. Open this URL in your web browser to start chatting!*
 
----
 
-## 🧪 CLI Querying & Testing
-You can still query the system without the frontend by using the CLI tool:
-```bash
-python query_data.py "Ask your question here"
-```

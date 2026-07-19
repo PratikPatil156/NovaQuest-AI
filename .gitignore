@@ -19,3 +19,12 @@ __pycache__/
 # Frontend
 frontend/node_modules/
 frontend/dist/
+
+# Local Data and Debug files
+data/
+debug_retrieval.py
+retrieval_output.txt
+retrival_output.txt
+test_pdf.txt
+test_retrieval.py
+all_chunks.txt

@@ -10,10 +10,20 @@ export default function App() {
     documents: []
   });
   
-  const [messages, setMessages] = useState([]);
+  // Load messages from localStorage on mount
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem('novaquest_chat_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [isUploading, setIsUploading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('novaquest_chat_history', JSON.stringify(messages));
+  }, [messages]);
 
   // Synchronize stats from the FastAPI backend
   const fetchStats = async () => {

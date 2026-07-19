@@ -11,5 +11,6 @@ watchdog
 fastapi
 uvicorn
 python-multipart
-langchain-openai
-
+langchain-groq
+langchain-huggingface
+sentence-transformers

@@ -2,7 +2,7 @@ import argparse
 import os
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
@@ -36,9 +36,9 @@ def main():
 
 def query_rag(query_text: str):
     # Verify API key is present
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if not openai_key or openai_key == "your_openai_api_key_here":
-        return "❌ Error: OPENAI_API_KEY environment variable is not set. Please add it to your .env file."
+    groq_key = os.getenv("GROQ_API_KEY")
+    if not groq_key or groq_key == "your_groq_api_key_here":
+        return "❌ Error: GROQ_API_KEY environment variable is not set. Please add it to your .env file."
 
     # Verify vector DB exists
     if not os.path.exists(CHROMA_PATH) or not os.listdir(CHROMA_PATH):
@@ -61,10 +61,10 @@ def query_rag(query_text: str):
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
 
-    # Load OpenAI LLM (gpt-4o-mini is smart, fast, and highly cost-effective)
-    model = ChatOpenAI(
-        model="gpt-4o-mini", 
-        openai_api_key=openai_key,
+    # Load Groq LLM
+    model = ChatGroq(
+        model="llama-3.1-8b-instant", 
+        groq_api_key=groq_key,
         temperature=0.2
     )
 

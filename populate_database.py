@@ -16,13 +16,13 @@ def main():
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
     args = parser.parse_args()
     if args.reset:
-        print("✨ Clearing Database")
+        print("Clearing Database")
         clear_database()
 
     # Create data directory if it doesn't exist
     if not os.path.exists(DATA_PATH):
         os.makedirs(DATA_PATH)
-        print(f"📁 Created '{DATA_PATH}' directory. Place your documents here.")
+        print(f"Created '{DATA_PATH}' directory. Place your documents here.")
 
     # Create chroma directory if it doesn't exist
     if not os.path.exists(CHROMA_PATH):
@@ -31,7 +31,7 @@ def main():
     # 1. Load documents
     documents = load_documents()
     if not documents:
-        print("⚠️ No documents found. Add some PDFs or TXT files to the 'data/' directory.")
+        print("No documents found. Add some PDFs or TXT files to the 'data/' directory.")
         return
 
     # 2. Split documents into chunks
@@ -50,33 +50,33 @@ def load_documents():
         pdf_docs = pdf_loader.load()
         documents.extend(pdf_docs)
         if pdf_docs:
-            print(f"📄 Loaded {len(pdf_docs)} pages from PDF documents.")
+            print(f"Loaded {len(pdf_docs)} pages from PDF documents.")
 
         # Load Text / Markdown files if any exist
         txt_loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
         txt_docs = txt_loader.load()
         documents.extend(txt_docs)
         if txt_docs:
-            print(f"📝 Loaded {len(txt_docs)} text documents.")
+            print(f"Loaded {len(txt_docs)} text documents.")
 
         md_loader = DirectoryLoader(DATA_PATH, glob="*.md", loader_cls=TextLoader)
         md_docs = md_loader.load()
         documents.extend(md_docs)
         if md_docs:
-            print(f"📔 Loaded {len(md_docs)} markdown documents.")
+            print(f"Loaded {len(md_docs)} markdown documents.")
 
     return documents
 
 
 def split_documents(documents: list[Document]):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=80,
+        chunk_size=400,
+        chunk_overlap=40,
         length_function=len,
         is_separator_regex=False,
     )
     chunks = text_splitter.split_documents(documents)
-    print(f"✂️ Split {len(documents)} documents into {len(chunks)} chunks.")
+    print(f"Split {len(documents)} documents into {len(chunks)} chunks.")
     return chunks
 
 
@@ -93,7 +93,7 @@ def add_to_chroma(chunks: list[Document]):
     # Add or Update the documents
     existing_items = db.get(include=[])  # ids are always returned by default
     existing_ids = set(existing_items["ids"])
-    print(f"📊 Number of existing documents in DB: {len(existing_ids)}")
+    print(f"Number of existing documents in DB: {len(existing_ids)}")
 
     # Only add documents that do not exist in the DB
     new_chunks = []
@@ -102,7 +102,7 @@ def add_to_chroma(chunks: list[Document]):
             new_chunks.append(chunk)
 
     if len(new_chunks):
-        print(f"📥 Adding {len(new_chunks)} new chunks to the database...")
+        print(f"Adding {len(new_chunks)} new chunks to the database...")
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
         
         # Batch insert to avoid size limits in SQLite/Chroma
@@ -112,9 +112,9 @@ def add_to_chroma(chunks: list[Document]):
             batch_ids = new_chunk_ids[i : i + batch_size]
             db.add_documents(batch_chunks, ids=batch_ids)
         
-        print("✅ Database updated successfully!")
+        print("Database updated successfully!")
     else:
-        print("ℹ️ No new documents to add. Database is up to date!")
+        print("No new documents to add. Database is up to date!")
 
 
 def calculate_chunk_ids(chunks):
@@ -148,7 +148,7 @@ def calculate_chunk_ids(chunks):
 def clear_database():
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
-        print("🗑️ Database wiped clean.")
+        print("Database wiped clean.")
 
 
 if __name__ == "__main__":

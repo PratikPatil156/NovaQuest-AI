@@ -59,7 +59,8 @@ export default function Sidebar({
       <div className="sidebar-header">
         <div className="logo-container">
           <svg viewBox="0 0 24 24">
-            <path d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99zM13 16h-2v2h2v-2zm0-6h-2v4h2v-4z" />
+            <path d="M12 2c-.1 0-.2.1-.2.2l-1.2 4.4a1 1 0 0 1-.7.7L5.5 8.5c-.1 0-.2.1-.2.2s.1.2.2.2l4.4 1.2c.3.1.6.4.7.7l1.2 4.4c0 .1.1.2.2.2s.2-.1.2-.2l1.2-4.4c.1-.3.4-.6.7-.7l4.4-1.2c.1 0 .2-.1.2-.2s-.1-.2-.2-.2l-4.4-1.2a1 1 0 0 1-.7-.7L12.2 2.2c0-.1-.1-.2-.2-.2z" />
+            <path d="M19 15c-.05 0-.1.05-.1.1l-.6 2.2a.5.5 0 0 1-.35.35l-2.2.6c-.05 0-.1.05-.1.1s.05.1.1.1l2.2.6c.15.05.3.2.35.35l.6 2.2c0 .05.05.1.1.1s.1-.05.1-.1l.6-2.2a.5.5 0 0 1 .35-.35l2.2-.6c.05 0 .1-.05.1-.1s-.05-.1-.1-.1l-2.2-.6a.5.5 0 0 1-.35-.35l-.6-2.2c0-.05-.05-.1-.1-.1z" />
           </svg>
         </div>
         <div className="logo-title-group">
@@ -73,15 +74,10 @@ export default function Sidebar({
         {/* Connection status */}
         <div className="connection-badge">
           <span className={`status-dot ${stats.connected ? 'connected' : 'disconnected'}`}></span>
-          <span>{stats.connected ? 'Quantum Engine Active' : 'Offline'}</span>
+          <span>{stats.connected ? 'Engine Active' : 'Offline'}</span>
         </div>
 
-        {/* Database Metrics Grid */}
         <div className="metrics-grid">
-          <div className="metric-card">
-            <div className="metric-title">Active Chunks</div>
-            <div className="metric-value highlighted">{stats.chunk_count}</div>
-          </div>
           <div className="metric-card">
             <div className="metric-title">Managed Files</div>
             <div className="metric-value">{stats.documents ? stats.documents.length : 0}</div>
